@@ -1,5 +1,5 @@
-const getLeaderboardPlayers = require("./lib/getLeaderboardPlayers");
-const checkBomb = require("./lib/checkBomb");
+const getLeaderboardPlayers = require("./getLeaderboardPlayers");
+const checkBomb = require("./checkBomb");
 const _ = require("lodash");
 require("console.table");
 
