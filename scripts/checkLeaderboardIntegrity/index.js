@@ -11,7 +11,7 @@ Promise.all([pcProm, ps4Prom, xboxProm])
     .then(res => {
         const players = _.flatten(res);
         const result = players.map(checkBomb)
-            .filter(x => x.total)
+            .filter(x => x.total >= 10)
             .filter(x => x.bombPercentage < 20)
             .sort((a, b) => a.bombPercentage - b.bombPercentage);
         console.log('%s players found', result.length);
