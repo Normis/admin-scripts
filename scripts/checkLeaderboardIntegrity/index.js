@@ -9,11 +9,14 @@ const xboxProm = getLeaderboardPlayers("XBOX");
 
 Promise.all([pcProm, ps4Prom, xboxProm])
     .then(res => {
-        const players = _.flatten(res);
-        const result = players.map(checkBomb)
+        const result = _(res)
+            .flatten()
+            .map(checkBomb)
             .filter(x => x.total >= 10)
-            .filter(x => x.bombPercentage < 20)
-            .sort((a, b) => a.bombPercentage - b.bombPercentage);
+            .filter(x => x.bombPercentage < 50)
+            // .sortBy(['bombPercentage'])
+            .sortBy(['platform', 'bombPercentage'])
+            .value()
         console.log('%s players found', result.length);
         console.table(result);
     })
