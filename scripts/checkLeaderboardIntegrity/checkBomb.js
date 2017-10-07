@@ -1,5 +1,12 @@
 const _ = require("lodash");
 
+const blocks = ["▁","▂","▃","▅","▆","▇","█"];
+const getBlock = (perc) => {
+    const maxChars = blocks.length - 1;
+    const charIndex = Math.floor(perc * maxChars);
+    return blocks[charIndex];
+};
+
 module.exports = function (player) {
     const progressions = player.progressions.sort((a, b) => b.created_at - a.created_at);
 
@@ -31,6 +38,8 @@ module.exports = function (player) {
 
             /** get the amount of bomb games in ranked queue. be optimistic */
             const bombInRanked = Math.min(dRanked, dBomb);
+            const char = getBlock(bombInRanked / (dRanked || 1));
+
             return (dRanked > 0)
                 ? {
                     bomb: acc.bomb + dBomb,
@@ -39,10 +48,24 @@ module.exports = function (player) {
                     total: acc.total + dBomb + dSecure + dHostage,
                     ranked: acc.ranked + dRanked,
                     casual: acc.casual + dCasual,
-                    bombInRanked: acc.bombInRanked + bombInRanked
+                    bombInRanked: acc.bombInRanked + bombInRanked,
+                    trend: acc.trend + char,
+                    datapoints: acc.datapoints + 1
                 }
                 : acc;
-        }, { bomb: 0, secure: 0, hostage: 0, total: 0, ranked: 0, casual: 0, bombInRanked: 0 });
+        }, {
+            bomb: 0,
+            secure: 0,
+            hostage: 0,
+            total: 0,
+            ranked: 0,
+            casual: 0,
+            bombInRanked: 0,
+            datapoints: 0,
+            trend: "",
+        });
+
+    played.start = progressions[progressions.length - 1].created_at;
 
     /**
      * here is where we get the actual percentage
@@ -60,7 +83,7 @@ module.exports = function (player) {
     /** return our data to be displayed */
     return{
         platform: _.get(player, "platform"),
-        placement: _.get(player, "placements.global", null),
+        placement: _.get(player, "placements.global", null) +1,
         // id: _.get(player, "id"),
         name: _.get(player, "name"),
         bombPercentage: Number.parseFloat((bombP * 100).toFixed(2)),
@@ -68,7 +91,16 @@ module.exports = function (player) {
         bombInRanked: played.bombInRanked,
         ranked: played.ranked,
         total: played.total,
+        trend: played.trend,
+        rankedDays: played.datapoints,
+        start: formatYear(played.start),
     };
 }
 
-const average = arr => arr.reduce((a, b) => a + b, 0) / arr.length;
+function average(arr) {
+    return arr.reduce((a, b) => a + b, 0) / arr.length;
+}
+function formatYear(date) {
+    const d = new Date(date);
+    return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`
+}
