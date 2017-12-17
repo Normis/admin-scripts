@@ -8,7 +8,8 @@ const getBlock = (perc) => {
 };
 
 module.exports = function (player) {
-    const progressions = player.progressions.sort((a, b) => b.created_at - a.created_at);
+    const progressions = player.progressions.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
 
     /** grab all deltas for the known playdays */
     const played = progressions.slice(1)
@@ -39,7 +40,6 @@ module.exports = function (player) {
             /** get the amount of bomb games in ranked queue. be optimistic */
             const bombInRanked = Math.min(dRanked, dBomb);
             const char = getBlock(bombInRanked / (dRanked || 1));
-
             return (dRanked > 0)
                 ? {
                     bomb: acc.bomb + dBomb,

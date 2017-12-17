@@ -1,13 +1,17 @@
 const qs = require("querystring");
 const { FETCH_OPTS, PLATFORMS } = require("../../constants");
 const fetch = require("node-fetch");
-module.exports = async function (platform) {
+module.exports.getLeaderboard = async function (platform) {
     const leaderboard = await getLeaderboard(platform);
     const ids = leaderboard.map(x => x.id);
 
     const players = await getPlayers(ids);
 
     return players;
+}
+module.exports.getPlayer = async function (id) {
+
+    return await getPlayers([id]);
 }
 
 
